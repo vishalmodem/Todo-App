@@ -44,7 +44,26 @@ var array:[String] = ["First","Second","Third"]
         }
         
     }
+    @IBAction func addBtn(_ sender: UIBarButtonItem) {
+        var tF = UITextField()
+        let alertC = UIAlertController(title: "Add New Todo Item", message: "", preferredStyle: UIAlertControllerStyle.alert)
+        let alertA = UIAlertAction(title: "Add Item", style: .default) { (action) in
+          self.array.insert(tF.text!, at: 0)
+            self.tableView.reloadData()
+        }
+        let alertB = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("Cancelled")
+        }
+        alertC.addTextField { (textField) in
+            textField.placeholder = "Add Item"
+            tF = textField
+        }
+        alertC.addAction(alertA)
+        alertC.addAction(alertB)
 
+        present(alertC, animated: true, completion: nil)
+    }
+    
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
