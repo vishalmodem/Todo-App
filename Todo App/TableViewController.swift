@@ -10,11 +10,11 @@ import UIKit
 
 class TableViewController: UITableViewController {
 var array = [TodoClass]()
-    let defaults = UserDefaults.standard
+    let file = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-let cls = TodoClass()
+        let cls = TodoClass()
         cls.title = "First"
         array.append(cls)
         let cls1 = TodoClass()
@@ -24,11 +24,9 @@ let cls = TodoClass()
         let cls2 = TodoClass()
         cls2.title = "Third"
         array.append(cls2)
-
-        if let items = defaults.array(forKey: "Todo") as? [TodoClass]{
-            array=items
-        }
+         loadData()
     }
+
 
 
     // MARK: - Table view data source
@@ -50,7 +48,7 @@ let cls = TodoClass()
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
          array[indexPath.row].done = !array[indexPath.row].done
-        tableView.reloadData()
+        saveData()
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
@@ -61,8 +59,7 @@ let cls = TodoClass()
             let newItem = TodoClass()
             newItem.title = tF.text!
           self.array.append(newItem)
-            self.defaults.set(self.array, forKey: "Todo")
-            self.tableView.reloadData()
+          self.saveData()
         }
         let alertB = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
             print("Cancelled")
@@ -77,6 +74,26 @@ let cls = TodoClass()
         present(alertC, animated: true, completion: nil)
     }
     
+    func  saveData(){
+        let encoder = PropertyListEncoder()
+        do{
+            let data = try? encoder.encode(self.array)
+            try data?.write(to: self.file!)
+        } catch{
+            print(error)
+        }
+        self.tableView.reloadData()
+    }
+    func loadData(){
+        if let data = try? Data.init(contentsOf: file!){
+        let decoder = PropertyListDecoder()
+            do{
+                array = try decoder.decode([TodoClass].self, from: data)
+            } catch{
+                print(error)
+            }
+        }
+    }
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
