@@ -9,13 +9,23 @@
 import UIKit
 
 class TableViewController: UITableViewController {
-var array:[String] = ["First","Second","Third"]
+var array = [TodoClass]()
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
+let cls = TodoClass()
+        cls.title = "First"
+        array.append(cls)
+        let cls1 = TodoClass()
+        cls1.title = "Sec"
+        array.append(cls1)
 
-        if let items = defaults.array(forKey: "Todo") as? [String]{
+        let cls2 = TodoClass()
+        cls2.title = "Third"
+        array.append(cls2)
+
+        if let items = defaults.array(forKey: "Todo") as? [TodoClass]{
             array=items
         }
     }
@@ -32,27 +42,25 @@ var array:[String] = ["First","Second","Third"]
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellTodo", for: indexPath)
-        cell.textLabel?.text=array[indexPath.row]
-
-    
-
+        let item = array[indexPath.row]
+        cell.textLabel?.text=item.title
+        cell.accessoryType=item.done == true ? .checkmark : .none
         return cell
     }
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath.row)
+        
+         array[indexPath.row].done = !array[indexPath.row].done
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
         
     }
     @IBAction func addBtn(_ sender: UIBarButtonItem) {
         var tF = UITextField()
         let alertC = UIAlertController(title: "Add New Todo Item", message: "", preferredStyle: UIAlertControllerStyle.alert)
         let alertA = UIAlertAction(title: "Add Item", style: .default) { (action) in
-          self.array.append(tF.text!)
+            let newItem = TodoClass()
+            newItem.title = tF.text!
+          self.array.append(newItem)
             self.defaults.set(self.array, forKey: "Todo")
             self.tableView.reloadData()
         }
