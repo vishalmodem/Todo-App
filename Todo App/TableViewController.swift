@@ -10,10 +10,14 @@ import UIKit
 
 class TableViewController: UITableViewController {
 var array:[String] = ["First","Second","Third"]
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        if let items = defaults.array(forKey: "Todo") as? [String]{
+            array=items
+        }
     }
 
 
@@ -48,7 +52,8 @@ var array:[String] = ["First","Second","Third"]
         var tF = UITextField()
         let alertC = UIAlertController(title: "Add New Todo Item", message: "", preferredStyle: UIAlertControllerStyle.alert)
         let alertA = UIAlertAction(title: "Add Item", style: .default) { (action) in
-          self.array.insert(tF.text!, at: 0)
+          self.array.append(tF.text!)
+            self.defaults.set(self.array, forKey: "Todo")
             self.tableView.reloadData()
         }
         let alertB = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
